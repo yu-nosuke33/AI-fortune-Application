@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>さやかの運命鑑定＆カラー診断</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Shippori Mincho', serif;
+            margin: 0;
+            padding: 0;
+            background-color: #F0F4F2;
+        }
+        /* Custom styles for animations */
+        @keyframes fade-in-up {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fade-in {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        .animate-fade-in-up { animation: fade-in-up 0.8s ease-out forwards; }
+        .animate-fade-in { animation: fade-in 0.5s ease-out forwards; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // ==========================================
+        // 【設定エリア：ここを書き換えるだけでカスタマイズ可能】
+        // ==========================================
+        const APP_CONFIG = {
+            appTitle: "さやかの運命鑑定＆カラー診断",
+            subTitle: "本質を知り、運命を切り拓く",
+            advisorName: "Sayaka",
+            // ボタンの飛び先（LINE公式アカウントや予約フォームなど）
+            ctaLink: "https://example.com/reservation",
+            ctaButtonText: "個人鑑定を予約する",
+            // テーマカラー設定（金色のグラデーション）
+            primaryColor: "from-[#D4AF37] via-[#C5A028] to-[#B49162]",
+        };
+
+        // ==========================================
+        // 【鑑定データ：この文章を組み合わせて結果を作ります】
+        // ==========================================
+
+        // 1. 数秘術データ（本質の鑑定）
+        const NUMEROLOGY_DATA = {
+            1: { keyword: "開拓者", desc: "自らの意思で道を切り拓くリーダーシップの持ち主。独立心が強く、前向きなエネルギーで周囲を牽引します。", message: "あなたは生まれながらのリーダーです。誰かの後をついていくのではなく、自分の直感を信じて道なき道を進むことに喜びを感じる魂をお持ちです。" },
+            2: { keyword: "調和者", desc: "繊細な感性と協調性を持ち、人々の間に調和をもたらします。サポート役として稀有な才能を発揮するでしょう。", message: "あなたの優しさは、周囲の人々にとっての癒しです。言葉にならな空気を読み取り、さりげなく手を差し伸べることができる、素晴らしい感性の持ち主です。" },
+            3: { keyword: "表現者", desc: "子供のような純粋な創造性を持ち、人生を楽しむ天才です。その明るさは周囲の希望となります。", message: "あなたの笑顔には、場の空気を一瞬で明るくする魔法があります。創造的なエネルギーに満ち溢れ、人生を遊び場のように楽しむ才能が授けられています。" },
+            4: { keyword: "建設者", desc: "誠実さと規律を重んじ、着実に成果を積み上げます。その安定感は多くの人からの信頼を集めます。", message: "一歩一歩、確実に積み上げていくあなたの姿勢は、多くの人に安心感を与えています。物事の本質を見極め、形にする力は誰にも負けません。" },
+            5: { keyword: "冒険家", desc: "変化と自由を愛する探求者。適応能力が高く、経験を通じて多くの叡智を体得します。", message: "自由な翼を持つあなたは、一つの場所に留まることを良しとしません。変化を恐れず、新しい世界へと飛び込んでいく勇気が、あなたの最大の武器です。" },
+            6: { keyword: "奉仕者", desc: "深い愛情と責任感を持ち、調和の取れた美しさを愛します。他者を癒し、育む力に長けています。", message: "あなたの愛は深く、そして広いものです。困っている人を放っておけないその責任感と母性のような温かさが、多くの人を救っています。" },
+            7: { keyword: "探求者", desc: "物事の本質を見抜く洞察力と知性を持ちます。孤独を愛し、精神的な真理を探求する哲学者です。", message: "あなたは孤高の哲学者です。表面的なことには惑わされず、常に「真実」を探求し続けるその姿勢は、精神的な高みへとあなたを導いています。" },
+            8: { keyword: "達成者", desc: "現実的な成功と豊かさを引き寄せる力強いエネルギーの持ち主。組織を統率し、大きな目標を達成します。", message: "あなたには、現実世界で大きな成功を手にする力があります。高い目標であればあるほど燃え上がるその情熱は、必ずや豊かさを引き寄せるでしょう。" },
+            9: { keyword: "博愛主義者", desc: "広い視野と慈悲深い心を持ち、理想の世界を追求します。全ての人の幸せを願う精神性の高さがあります。", message: "あなたの視点は常に高く、広く、世界全体を見渡しています。すべての人が幸せであることを願うその純粋な心は、聖人のような輝きを放っています。" },
+            11: { keyword: "メッセンジャー", desc: "鋭い直感と霊的な感性を持ちます。常識を超えた発想で、人々に気づきを与える役割を担っています。", message: "あなたは天と地をつなぐ架け橋です。ふと感じる直感やインスピレーションは、あなただけでなく、周囲の人々を導く重要なメッセージとなるでしょう。" },
+            22: { keyword: "マスタービルダー", desc: "高い理想を現実社会で具現化するカリスマ性を持っています。大きなスケールで世界に貢献する力があります。", message: "理想を夢で終わらせず、現実の形にする力強さを持っています。あなたの描くビジョンは壮大ですが、それを実現するだけのパワーも同時に授けられています。" },
+            33: { keyword: "宇宙の人", desc: "無償の愛と独特な感性で生きています。枠に囚われない自由な魂で、多くの人を癒します。", message: "あなたの愛には条件がありません。ただそこにいるだけで周囲を癒やしてしまうような、不思議で規格外な魅力の持ち主です。" },
+        };
+
+        // 2. カラーセラピーデータ（現状分析）
+        const COLOR_DATA = {
+            red: { name: "レッド", hex: "#BF4A4A", conscious: "「情熱的に行動したい」", subconscious: "「エネルギーを解き放ちたい」" },
+            blue: { name: "ブルー", hex: "#4A6EBF", conscious: "「冷静に判断したい」", subconscious: "「静寂の中で自分を見つめたい」" },
+            yellow: { name: "イエロー", hex: "#D4AF37", conscious: "「楽しく希望を持ちたい」", subconscious: "「個性を認めてほしい」" },
+            green: { name: "グリーン", hex: "#558B6E", conscious: "「調和を大切にしたい」", subconscious: "「ありのままの自分に戻りたい」" },
+            pink: { name: "ピンク", hex: "#D48B9F", conscious: "「優しくありたい」", subconscious: "「無条件に愛されたい」" },
+            purple: { name: "パープル", hex: "#8B6B9F", conscious: "「直感を信じたい」", subconscious: "「魂の成長を感じたい」" },
+            orange: { name: "オレンジ", hex: "#D4824A", conscious: "「人と繋がりたい」", subconscious: "「過去の傷を癒やして楽しみたい」" },
+            white: { name: "ホワイト", hex: "#F5F5F0", border: true, conscious: "「リセットしたい」", subconscious: "「新しい光へ進みたい」" },
+        };
+
+        // 3. 未来への導きメッセージ（ランダム表示用）
+        const FUTURE_MESSAGES = [
+            "霧が晴れるように、進むべき道が明確になる瞬間が近づいています。今は論理的な思考よりも、ふと感じた直感を信じてみてください。その一歩が、大きな転機となるでしょう。",
+            "ずっと走り続けてきた心と体に、休息が必要な時期です。立ち止まることは後退ではありません。一度深く息を吸い込み、自分自身を丁寧に労ることで、次のステージへの扉が開きます。",
+            "思いがけない変化の風が吹き始めています。抵抗するのではなく、川の流れに身を任せるように変化を受け入れてみてください。その先には、想像以上の素晴らしい景色が待っています。",
+            "あなたがこれまで注いできた優しさや愛情が、形を変えて戻ってくるタイミングです。遠慮せずに受け取ってください。あなたはそれを受け取るに値する素晴らしい存在なのですから。",
+            "過去のしがらみや、もう不要になった感情を手放す絶好のチャンスです。両手が塞がっていては、新しい幸せを掴むことはできません。勇気を出して手放せば、新しい風が吹き込みます。",
+            "あなたの何気ない言葉が、誰かの心を救う光となります。自分の影響力を過小評価しないでください。心に浮かんだポジティブな言葉は、恐れずに発信していきましょう。",
+            "外側に答えを求めなくても、実はもうあなたの中に答えはあるようです。静かな時間を持ち、内なる声に耳を傾けてみてください。魂はすでに進むべき道を知っています。",
+            "素晴らしい出会いの予感があります。それは人かもしれませんし、新しい趣味や仕事かもしれません。心をオープンにして、日常の小さな変化を見逃さないようにしてください。",
+            "今は「耐える」時ではなく、心から「楽しむ」時です。義務感で動くのをやめ、心がワクワクする方を選んでみましょう。あなた自身の輝きが、運気を最高潮に高めてくれます。",
+            "長い間温めてきた才能や魅力が、いよいよ開花する前触れを感じます。自信を持ってください。あなたが輝くことは、周囲の人々にとっても希望の光となるのです。",
+            "迷路の中にいるように感じるかもしれませんが、出口はすぐそこにあります。焦らず、一歩ずつ足元を確かめて進んでください。今の経験も、後になって「必要な道のりだった」と気づくはずです。",
+            "人間関係において、嬉しい進展がありそうです。誤解が解けたり、絆が深まったりするでしょう。素直な気持ちを伝えることが、幸せへの近道となります。",
+            "これまでの努力が実を結び、形となって現れる時期です。自分を信じて続けてきたことを誇りに思ってください。収穫の時はもうすぐそこまで来ています。",
+            "古い殻を破り、新しい自分へと生まれ変わるタイミングです。怖がらずにチャレンジしてみましょう。失敗さえも糧にして、あなたはより大きく成長できる運命にあります。",
+            "直感が鋭くなっています。ふと思いついたアイデアや、なんとなく気になった場所には、重要なヒントが隠されています。心のアンテナを敏感にして過ごしてください。",
+            "誰かと比較するのをやめ、あなた自身のペースを大切にしましょう。早咲きの花もあれば、遅咲きの花もあります。あなたにはあなただけの、美しい咲く時期があるのです。",
+            "感謝の気持ちを言葉にすることで、運気がさらに好転します。当たり前だと思っている日常の中にこそ、幸せの種が隠されています。小さな奇跡を見つけてみてください。",
+            "今は準備の期間です。すぐに結果が出なくても焦る必要はありません。水面下で根を張るように、知識や経験を蓄えることで、やがて大輪の花を咲かせるでしょう。",
+            "あなたの純粋な想いが、周囲の人の心を動かします。計算や駆け引きは必要ありません。ありのままのあなたの言葉で伝えることが、一番の解決策となるでしょう。",
+            "予期せぬサポートが得られる予兆があります。一人で抱え込まず、周囲に助けを求めてみてください。差し伸べられた手は、天からのギフトです。"
+        ];
+
+        // --- Icons (Lucide replacements) ---
+        const Star = ({ size = 24, className = "", ...props }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+        );
+        const ArrowRight = ({ size = 24, className = "", ...props }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+        );
+        const ChevronRight = ({ size = 24, className = "", ...props }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        );
+        const Diamond = ({ size = 24, className = "", ...props }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
+                <path d="M6 3h12l4 6-10 13L2 9z"></path>
+            </svg>
+        );
+
+        const CornerDecoration = ({ className }) => (
+            <svg className={className} width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 40V15C1 7.26801 7.26801 1 15 1H40" stroke="#C5A028" strokeWidth="1.5" strokeOpacity="0.4"/>
+                <path d="M5 40V16C5 9.92487 9.92487 5 16 5H40" stroke="#C5A028" strokeWidth="1" strokeOpacity="0.2"/>
+            </svg>
+        );
+
+        const App = () => {
+            const [step, setStep] = useState('input_profile');
+            const [name, setName] = useState('');
+            const [birthYear, setBirthYear] = useState('');
+            const [birthMonth, setBirthMonth] = useState('');
+            const [birthDay, setBirthDay] = useState('');
+            const [firstColor, setFirstColor] = useState(null);
+            const [secondColor, setSecondColor] = useState(null);
+            const [numerologyResult, setNumerologyResult] = useState(null);
+            const [generatedMessage, setGeneratedMessage] = useState('');
+
+            const currentYear = new Date().getFullYear();
+            const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
+            const months = Array.from({ length: 12 }, (_, i) => i + 1);
+            const days = Array.from({ length: 31 }, (_, i) => i + 1);
+
+            const calculateLifePathNumber = (y, m, d) => {
+                const dateString = `${y}${String(m).padStart(2, '0')}${String(d).padStart(2, '0')}`;
+                const digits = dateString.split('').map(Number);
+                let sum = digits.reduce((a, b) => a + b, 0);
+                while (sum > 9 && sum !== 11 && sum !== 22 && sum !== 33) {
+                    sum = String(sum).split('').map(Number).reduce((a, b) => a + b, 0);
+                }
+                return sum;
+            };
+
+            const handleProfileSubmit = (e) => {
+                e.preventDefault();
+                if (!name || !birthYear || !birthMonth || !birthDay) return;
+                setStep('input_color1');
+            };
+
+            const handleColor1Submit = (colorKey) => {
+                setFirstColor(colorKey);
+                setTimeout(() => setStep('input_color2'), 300);
+            };
+
+            // AIなしで「鑑定士っぽい文章」を組み立てるロジック
+            const createFortuneMessage = (userName, numData, color1Key, color2Key) => {
+                const c1 = COLOR_DATA[color1Key];
+                const c2 = COLOR_DATA[color2Key];
+
+                // パート1: 二面性の指摘（アンビバレンス）
+                let ambivalenceText = "";
+                if (color1Key === color2Key) {
+                    ambivalenceText = `あなたは今、${c1.name}色の持つエネルギーに心身ともに満たされています。表に出す顔と、内なる願いが一致している純粋な状態ですね。ただ、一直線になりすぎて、少し疲れを感じてはいませんか？`;
+                } else {
+                    ambivalenceText = `一見すると、あなたは${c1.conscious}という意志を周囲に見せていますが、実は心の奥底で、${c2.subconscious}という、誰にも見せていない繊細な願いを抱いているのではないでしょうか？この「外向きの顔」と「内なる声」のギャップに、あなた自身も薄々気づいているはずです。`;
+                }
+
+                // パート2: 深い肯定
+                const affirmationText = `最近、周囲の期待に応えようとして、自分の本当の気持ちを後回しにしてきた場面があったように見受けられます。あなたのその隠れた頑張りは、星々がしっかりと見ていますよ。`;
+
+                // パート3: 未来への導き（ランダム）
+                const randomAdvice = FUTURE_MESSAGES[Math.floor(Math.random() * FUTURE_MESSAGES.length)];
+
+                // 結合
+                return `${userName}様、鑑定結果が出ました。\n\n【内なる声の診断】\n${ambivalenceText}\n\n${affirmationText}\n\n【運命の導き】\n${randomAdvice} \n\nあなたを守護する数字「${numData.keyword}」の力と、${c2.name}色のエネルギーを味方につけて、運命を切り拓いてください。`;
+            };
+
+            const handleColor2Submit = async (colorKey) => {
+                setSecondColor(colorKey);
+                setStep('loading');
+
+                // 1. 数秘計算
+                const lifePathNumber = calculateLifePathNumber(birthYear, birthMonth, birthDay);
+                const numData = NUMEROLOGY_DATA[lifePathNumber] || NUMEROLOGY_DATA[1];
+                setNumerologyResult(numData);
+
+                // 2. メッセージ生成（AIを使わずロジックで作成）
+                const message = createFortuneMessage(name, numData, firstColor, colorKey);
+                setGeneratedMessage(message);
+
+                // 3. 演出用の待ち時間（「占っています...」感を出す）
+                setTimeout(() => {
+                    setStep('result');
+                }, 2500);
+            };
+
+            const reset = () => {
+                setStep('input_profile');
+                setName('');
+                setBirthYear('');
+                setBirthMonth('');
+                setBirthDay('');
+                setFirstColor(null);
+                setSecondColor(null);
+                setNumerologyResult(null);
+                setGeneratedMessage('');
+            };
+
+            const ColorButton = ({ colorKey, data, onClick, isSelected }) => (
+                <button
+                    type="button"
+                    onClick={() => onClick(colorKey)}
+                    className={`
+                        relative group flex flex-col items-center justify-center gap-2 p-2 transition-all duration-300
+                        ${isSelected ? 'transform scale-105' : 'hover:scale-105'}
+                    `}
+                >
+                    <div
+                        className={`
+                            w-12 h-12 shadow-md transition-all duration-300 rounded-full
+                            ${isSelected ? 'ring-2 ring-offset-2 ring-[#C5A028] shadow-lg' : ''}
+                            ${data.border ? 'border border-gray-300' : ''}
+                        `}
+                        style={{ backgroundColor: data.hex }}
+                    >
+                        {isSelected && (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="w-2 h-2 bg-white rounded-full shadow-sm"></div>
+                            </div>
+                        )}
+                    </div>
+                    <span className="text-[10px] tracking-wider text-gray-600 font-serif">{data.name}</span>
+                </button>
+            );
+
+            return (
+                <div className="min-h-screen w-full bg-[#F0F4F2] flex items-center justify-center p-4 text-[#4A4A4A] relative overflow-hidden">
+
+                    {/* 背景装飾 */}
+                    <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+                        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-[#E8F0E8] rounded-full mix-blend-multiply filter blur-[80px]"></div>
+                        <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-[#E0EBE4] rounded-full mix-blend-multiply filter blur-[80px]"></div>
+                    </div>
+
+                    {/* メインカード */}
+                    <div className="relative w-full max-w-md bg-white border border-[#C5A028]/20 shadow-[0_10px_40px_-10px_rgba(85,139,110,0.15)] rounded-xl overflow-hidden transition-all duration-500">
+
+                        <CornerDecoration className="absolute top-2 left-2 pointer-events-none" />
+                        <CornerDecoration className="absolute top-2 right-2 transform scale-x-[-1] pointer-events-none" />
+                        <CornerDecoration className="absolute bottom-2 left-2 transform scale-y-[-1] pointer-events-none" />
+                        <CornerDecoration className="absolute bottom-2 right-2 transform scale-[-1] pointer-events-none" />
+
+                        <div className="p-8 relative z-10 min-h-[600px] flex flex-col">
+
+                            {/* ヘッダーエリア */}
+                            <div className="text-center mb-8 pt-4">
+                                <div className="inline-flex items-center gap-2 mb-3">
+                                    <div className="h-[1px] w-8 bg-[#C5A028]"></div>
+                                    <span className="text-[13px] tracking-[0.2em] text-[#C5A028] uppercase">無料鑑定</span>
+                                    <div className="h-[1px] w-8 bg-[#C5A028]"></div>
+                                </div>
+                                <h1 className="text-2xl font-bold text-[#444] mb-2 tracking-wide font-serif">
+                                    {APP_CONFIG.appTitle}
+                                </h1>
+                                <p className="text-xs text-[#888] font-sans tracking-wider">{APP_CONFIG.subTitle}</p>
+                            </div>
+
+                            {/* コンテンツエリア */}
+                            <div className="flex-1 flex flex-col justify-center">
+
+                                {/* Step 1: プロフィール入力 */}
+                                {step === 'input_profile' && (
+                                    <form onSubmit={handleProfileSubmit} className="space-y-8 animate-fade-in-up px-2">
+                                        <div className="text-center mb-6">
+                                            <p className="text-sm text-[#666] font-sans leading-loose">
+                                                あなたのお名前と生年月日は、<br/>
+                                                運命を紐解く鍵となります。
+                                            </p>
+                                        </div>
+
+                                        <div className="space-y-6">
+                                            <div className="space-y-2">
+                                                <label className="block text-xs font-bold text-[#C5A028] tracking-widest uppercase">名前</label>
+                                                <input
+                                                    type="text"
+                                                    value={name}
+                                                    onChange={(e) => setName(e.target.value)}
+                                                    placeholder="お名前を入力してください（ニックネーム可能）"
+                                                    className="w-full px-4 py-3 bg-[#FAFAFA] border-b border-[#D1D1D1] focus:border-[#C5A028] focus:bg-white outline-none transition-colors text-[#333] placeholder-gray-400 font-sans rounded-none"
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="block text-xs font-bold text-[#C5A028] tracking-widest uppercase">生年月日</label>
+                                                <div className="grid grid-cols-3 gap-3">
+                                                    <div className="relative">
+                                                        <select
+                                                            value={birthYear}
+                                                            onChange={(e) => setBirthYear(e.target.value)}
+                                                            className="w-full px-2 py-3 bg-[#FAFAFA] border-b border-[#D1D1D1] focus:border-[#C5A028] outline-none appearance-none text-[#333] text-sm font-sans rounded-none cursor-pointer"
+                                                            required
+                                                        >
+                                                            <option value="">年</option>
+                                                            {years.map(y => <option key={y} value={y}>{y}</option>)}
+                                                        </select>
+                                                    </div>
+                                                    <div className="relative">
+                                                        <select
+                                                            value={birthMonth}
+                                                            onChange={(e) => setBirthMonth(e.target.value)}
+                                                            className="w-full px-2 py-3 bg-[#FAFAFA] border-b border-[#D1D1D1] focus:border-[#C5A028] outline-none appearance-none text-[#333] text-sm font-sans rounded-none cursor-pointer"
+                                                            required
+                                                        >
+                                                            <option value="">月</option>
+                                                            {months.map(m => <option key={m} value={m}>{m}</option>)}
+                                                        </select>
+                                                    </div>
+                                                    <div className="relative">
+                                                        <select
+                                                            value={birthDay}
+                                                            onChange={(e) => setBirthDay(e.target.value)}
+                                                            className="w-full px-2 py-3 bg-[#FAFAFA] border-b border-[#D1D1D1] focus:border-[#C5A028] outline-none appearance-none text-[#333] text-sm font-sans rounded-none cursor-pointer"
+                                                            required
+                                                        >
+                                                            <option value="">日</option>
+                                                            {days.map(d => <option key={d} value={d}>{d}</option>)}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-col items-center mt-8 gap-3">
+                                            <button
+                                                type="submit"
+                                                className={`bg-gradient-to-r ${APP_CONFIG.primaryColor} text-white text-sm font-medium py-3 px-10 rounded-sm shadow-md hover:shadow-xl transform transition-all tracking-widest flex items-center gap-2 border border-white/20`}
+                                            >
+                                                <span>カラー診断へ進む</span>
+                                                <ChevronRight size={14} />
+                                            </button>
+                                            <p className="text-[13px] text-[#999] font-sans">※入力内容は保存されません</p>
+                                        </div>
+                                    </form>
+                                )}
+
+                                {/* Step 2: 顕在意識カラー選択 */}
+                                {step === 'input_color1' && (
+                                    <div className="space-y-8 animate-fade-in-up text-center px-2">
+                                        <div className="space-y-2">
+                                            <span className="text-[#C5A028] text-xs font-bold tracking-widest uppercase block">Question 01</span>
+                                            <h2 className="text-lg font-medium text-[#333] font-serif">今、最も惹かれる色はどれですか？</h2>
+                                            <p className="text-xs text-[#888] font-sans mt-2">深く考えず、直感でお選びください。</p>
+                                        </div>
+
+                                        <div className="grid grid-cols-4 gap-x-2 gap-y-6 py-4">
+                                            {Object.entries(COLOR_DATA).map(([key, data]) => (
+                                                <ColorButton
+                                                    key={key}
+                                                    colorKey={key}
+                                                    data={data}
+                                                    onClick={handleColor1Submit}
+                                                    isSelected={firstColor === key}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Step 3: 潜在意識カラー選択 */}
+                                {step === 'input_color2' && (
+                                    <div className="space-y-8 animate-fade-in-up text-center px-2">
+                                        <div className="space-y-2">
+                                            <span className="text-[#C5A028] text-xs font-bold tracking-widest uppercase block">Question 02</span>
+                                            <h2 className="text-lg font-medium text-[#333] font-serif">次に気になる色はどれですか？</h2>
+                                            <p className="text-xs text-[#888] font-sans mt-2">あなたの深層心理に問いかけます。</p>
+                                        </div>
+
+                                        <div className="grid grid-cols-4 gap-x-2 gap-y-6 py-4">
+                                            {Object.entries(COLOR_DATA).map(([key, data]) => (
+                                                <ColorButton
+                                                    key={key}
+                                                    colorKey={key}
+                                                    data={data}
+                                                    onClick={handleColor2Submit}
+                                                    isSelected={secondColor === key}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Loading */}
+                                {step === 'loading' && (
+                                    <div className="flex flex-col items-center justify-center py-12 animate-fade-in">
+                                        <div className="relative mb-8">
+                                            <div className="w-16 h-16 border-[1px] border-[#E8E8E8] rounded-full"></div>
+                                            <div className="absolute top-0 left-0 w-16 h-16 border-[1px] border-t-[#C5A028] border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                <Diamond size={12} className="text-[#C5A028] animate-pulse" />
+                                            </div>
+                                        </div>
+                                        <div className="text-center space-y-3">
+                                            <p className="text-lg font-serif text-[#333] tracking-widest">鑑定中...</p>
+                                            <p className="text-xs font-sans text-[#888]">
+                                                星の配置と色の波長を読み解いています<br/>
+                                                <span className="opacity-70 text-[10px]">しばらくお待ちください</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Result: 診断結果 */}
+                                {step === 'result' && numerologyResult && (
+                                    <div className="animate-fade-in-up space-y-6 pb-2">
+
+                                        <div className="text-center border-b border-[#E8E8E8] pb-4 mb-4 mx-4">
+                                            <p className="text-xs text-[#888] font-sans mb-1 tracking-wider">Diagnostic Result</p>
+                                            <p className="text-sm text-[#333] font-serif">{name} 様の鑑定書</p>
+                                        </div>
+
+                                        {/* 結果カード */}
+                                        <div className="bg-[#FAFAFA] border border-[#E8E8E8] p-6 mx-2 relative overflow-hidden shadow-inner">
+                                            <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-[#D4AF37] via-[#FCEDA5] to-[#D4AF37]"></div>
+
+                                            {/* メイン数秘 */}
+                                            <div className="text-center mb-8">
+                                                <div className="flex items-center justify-center gap-2 mb-2">
+                                                    <div className="h-[1px] w-4 bg-[#C5A028]"></div>
+                                                    <span className="text-[10px] text-[#C5A028] uppercase tracking-widest font-bold">Life Path Number</span>
+                                                    <div className="h-[1px] w-4 bg-[#C5A028]"></div>
+                                                </div>
+
+                                                <div className="font-serif text-5xl text-[#333] mb-3 relative inline-block">
+                                                    {calculateLifePathNumber(birthYear, birthMonth, birthDay)}
+                                                    <Star size={12} className="absolute -top-1 -right-4 text-[#C5A028] opacity-50" />
+                                                </div>
+
+                                                <h2 className="text-lg font-serif font-bold text-[#333] mb-3">
+                                                    {numerologyResult.keyword}
+                                                </h2>
+                                                <p className="text-sm font-sans text-[#555] leading-relaxed text-justify">
+                                                    {numerologyResult.desc}
+                                                </p>
+                                                {/* 数秘詳細メッセージ */}
+                                                <p className="text-sm font-serif text-[#444] leading-relaxed text-justify mt-4 bg-white p-3 rounded border border-[#E8E8E8]">
+                                                    {numerologyResult.message}
+                                                </p>
+                                            </div>
+
+                                            {/* カラーセラピー */}
+                                            <div className="space-y-6">
+                                                {/* 1色目 (Conscious) */}
+                                                <div className="flex items-start gap-3">
+                                                    <div className="w-8 h-8 rounded-full border border-gray-200 flex-shrink-0 shadow-sm mt-1" style={{background: COLOR_DATA[firstColor].hex}}></div>
+                                                    <div className="flex-1">
+                                                        <div className="text-[10px] uppercase text-[#C5A028] tracking-wider font-bold">Conscious</div>
+                                                        <p className="text-xs text-[#555] font-sans leading-tight mt-1 mb-2">
+                                                            表向きの顔：{COLOR_DATA[firstColor].conscious}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                {/* 2色目 (Subconscious) */}
+                                                <div className="flex items-start gap-3">
+                                                    <div className="w-8 h-8 rounded-full border border-gray-200 flex-shrink-0 shadow-sm mt-1" style={{background: COLOR_DATA[secondColor].hex}}></div>
+                                                    <div className="flex-1">
+                                                        <div className="text-[10px] uppercase text-[#C5A028] tracking-wider font-bold">Subconscious</div>
+                                                        <p className="text-xs text-[#555] font-sans leading-tight mt-1 mb-2">
+                                                            内なる声：{COLOR_DATA[secondColor].subconscious}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* 鑑定士からのメッセージ (生成されたロジック文章) */}
+                                            <div className="mt-8 pt-6 border-t border-[#E8E8E8]">
+                                                <div className="flex items-center justify-center gap-2 mb-4">
+                                                    <Star size={14} className="text-[#C5A028]" />
+                                                    <span className="text-xs font-bold text-[#C5A028] uppercase tracking-widest">Message from {APP_CONFIG.advisorName}</span>
+                                                    <Star size={14} className="text-[#C5A028]" />
+                                                </div>
+                                                <div className="bg-white p-4 rounded-lg border border-[#f0e6d2] shadow-sm">
+                                                    <p className="text-sm font-serif text-[#444] leading-relaxed whitespace-pre-wrap">
+                                                        {generatedMessage}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        {/* CTAエリア */}
+                                        <div className="pt-4 space-y-4 px-4">
+                                            <div className="text-center">
+                                                <p className="text-xs text-[#C5A028] font-serif tracking-widest mb-3">
+                                                    より深い運命の導きが必要ですか？
+                                                </p>
+                                            </div>
+                                            <a
+                                                href={APP_CONFIG.ctaLink}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className={`block w-full bg-gradient-to-r ${APP_CONFIG.primaryColor} text-white text-center text-sm font-medium py-4 px-6 rounded-sm shadow-md hover:shadow-xl transition-all flex items-center justify-center gap-3 tracking-widest border border-white/30`}
+                                            >
+                                                <span>{APP_CONFIG.ctaButtonText}</span>
+                                                <ArrowRight size={16} />
+                                            </a>
+
+                                            <button
+                                                onClick={reset}
+                                                className="block w-full text-center text-xs text-[#999] hover:text-[#666] transition-colors py-2 font-sans"
+                                            >
+                                                トップに戻る
+                                            </button>
+                                        </div>
+
+                                    </div>
+                                )}
+
+                            </div>
+                        </div>
+
+                        {/* フッター */}
+                        <div className="bg-[#E0EBE4]/30 p-3 text-center border-t border-[#C5A028]/10">
+                           <p className="text-[10px] text-[#889999] font-serif tracking-wider">
+                             © {new Date().getFullYear()} {APP_CONFIG.advisorName}.
+                           </p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
