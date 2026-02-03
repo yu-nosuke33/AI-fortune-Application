@@ -9,72 +9,12 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Zen Maru Gothic', sans-serif;
+            font-family: 'Shippori Mincho', serif;
             margin: 0;
             padding: 0;
-            min-height: 100vh;
-            background: linear-gradient(180deg,
-                #0a0a1a 0%,
-                #0d1f2d 15%,
-                #0a2a2a 30%,
-                #0d3d3d 45%,
-                #1a4a4a 55%,
-                #0d3d3d 65%,
-                #0a2a2a 80%,
-                #0d1f2d 90%,
-                #0a0a1a 100%
-            );
-            position: relative;
-            overflow-x: hidden;
-        }
-        /* Aurora effect overlay */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background:
-                radial-gradient(ellipse 80% 50% at 20% 40%, rgba(0, 255, 200, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse 60% 40% at 70% 30%, rgba(100, 200, 255, 0.12) 0%, transparent 50%),
-                radial-gradient(ellipse 70% 50% at 50% 60%, rgba(0, 180, 150, 0.1) 0%, transparent 50%);
-            pointer-events: none;
-            animation: aurora-move 8s ease-in-out infinite alternate;
-        }
-        @keyframes aurora-move {
-            0% { transform: translateY(0) scale(1); opacity: 0.8; }
-            100% { transform: translateY(-20px) scale(1.05); opacity: 1; }
-        }
-        /* Stars effect */
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image:
-                radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.8), transparent),
-                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.6), transparent),
-                radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.7), transparent),
-                radial-gradient(2px 2px at 130px 80px, rgba(255,255,255,0.5), transparent),
-                radial-gradient(1px 1px at 160px 120px, rgba(255,255,255,0.8), transparent),
-                radial-gradient(2px 2px at 200px 50px, rgba(255,255,255,0.6), transparent),
-                radial-gradient(1px 1px at 250px 150px, rgba(255,255,255,0.7), transparent),
-                radial-gradient(2px 2px at 300px 100px, rgba(255,255,255,0.5), transparent),
-                radial-gradient(1px 1px at 350px 200px, rgba(255,255,255,0.8), transparent),
-                radial-gradient(2px 2px at 400px 60px, rgba(255,255,255,0.6), transparent);
-            background-size: 450px 250px;
-            pointer-events: none;
-            animation: twinkle 4s ease-in-out infinite;
-        }
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
+            background-color: #F0F4F2;
         }
         /* Custom styles for animations */
         @keyframes fade-in-up {
@@ -99,16 +39,14 @@
         // 【設定エリア：ここを書き換えるだけでカスタマイズ可能】
         // ==========================================
         const APP_CONFIG = {
-            appTitle: "あなたの強み発見＆カラー診断",
-            subTitle: "魂の声に耳を傾け、本来の輝きを取り戻す",
+            appTitle: "さやかの運命鑑定＆カラー診断",
+            subTitle: "本質を知り、運命を切り拓く",
             advisorName: "Sayaka",
             // ボタンの飛び先（LINE公式アカウントや予約フォームなど）
             ctaLink: "https://example.com/reservation",
-            ctaButtonText: "深掘り鑑定を予約する",
-            // テーマカラー設定（オーロラ風シアン系）
-            primaryColor: "from-[#00CED1] via-[#20B2AA] to-[#008B8B]",
-            // アクセントカラー
-            accentColor: "#00CED1",
+            ctaButtonText: "個人鑑定を予約する",
+            // テーマカラー設定（金色のグラデーション）
+            primaryColor: "from-[#D4AF37] via-[#C5A028] to-[#B49162]",
         };
 
         // ==========================================
@@ -118,7 +56,7 @@
         // 1. 数秘術データ（本質の鑑定）
         const NUMEROLOGY_DATA = {
             1: { keyword: "開拓者", desc: "自らの意思で道を切り拓くリーダーシップの持ち主。独立心が強く、前向きなエネルギーで周囲を牽引します。", message: "あなたは生まれながらのリーダーです。誰かの後をついていくのではなく、自分の直感を信じて道なき道を進むことに喜びを感じる魂をお持ちです。" },
-            2: { keyword: "調和者", desc: "繊細な感性と協調性を持ち、人々の間に調和をもたらします。サポート役として稀有な才能を発揮するでしょう。", message: "あなたの優しさは、周囲の人々にとっての癒しです。言葉にならない空気を読み取り、さりげなく手を差し伸べることができる、素晴らしい感性の持ち主です。" },
+            2: { keyword: "調和者", desc: "繊細な感性と協調性を持ち、人々の間に調和をもたらします。サポート役として稀有な才能を発揮するでしょう。", message: "あなたの優しさは、周囲の人々にとっての癒しです。言葉にならな空気を読み取り、さりげなく手を差し伸べることができる、素晴らしい感性の持ち主です。" },
             3: { keyword: "表現者", desc: "子供のような純粋な創造性を持ち、人生を楽しむ天才です。その明るさは周囲の希望となります。", message: "あなたの笑顔には、場の空気を一瞬で明るくする魔法があります。創造的なエネルギーに満ち溢れ、人生を遊び場のように楽しむ才能が授けられています。" },
             4: { keyword: "建設者", desc: "誠実さと規律を重んじ、着実に成果を積み上げます。その安定感は多くの人からの信頼を集めます。", message: "一歩一歩、確実に積み上げていくあなたの姿勢は、多くの人に安心感を与えています。物事の本質を見極め、形にする力は誰にも負けません。" },
             5: { keyword: "冒険家", desc: "変化と自由を愛する探求者。適応能力が高く、経験を通じて多くの叡智を体得します。", message: "自由な翼を持つあなたは、一つの場所に留まることを良しとしません。変化を恐れず、新しい世界へと飛び込んでいく勇気が、あなたの最大の武器です。" },
@@ -192,8 +130,8 @@
 
         const CornerDecoration = ({ className }) => (
             <svg className={className} width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 40V15C1 7.26801 7.26801 1 15 1H40" stroke="#00CED1" strokeWidth="1.5" strokeOpacity="0.5"/>
-                <path d="M5 40V16C5 9.92487 9.92487 5 16 5H40" stroke="#00CED1" strokeWidth="1" strokeOpacity="0.3"/>
+                <path d="M1 40V15C1 7.26801 7.26801 1 15 1H40" stroke="#C5A028" strokeWidth="1.5" strokeOpacity="0.4"/>
+                <path d="M5 40V16C5 9.92487 9.92487 5 16 5H40" stroke="#C5A028" strokeWidth="1" strokeOpacity="0.2"/>
             </svg>
         );
 
@@ -242,19 +180,19 @@
                 // パート1: 二面性の指摘（アンビバレンス）
                 let ambivalenceText = "";
                 if (color1Key === color2Key) {
-                    ambivalenceText = `あなたは今、${c1.name}色の持つエネルギーに心身ともに満たされています。表に出す顔と、内なる願いが一致している純粋な状態ですね。自分の強みを存分に発揮できる時期です。`;
+                    ambivalenceText = `あなたは今、${c1.name}色の持つエネルギーに心身ともに満たされています。表に出す顔と、内なる願いが一致している純粋な状態ですね。ただ、一直線になりすぎて、少し疲れを感じてはいませんか？`;
                 } else {
-                    ambivalenceText = `一見すると、あなたは${c1.conscious}という思いを持っていますが、実は心の奥底で、${c2.subconscious}という、大切にしたい願いを抱いているのではないでしょうか？この両方の思いを認めることが、あなたの第2の人生への鍵となります。`;
+                    ambivalenceText = `一見すると、あなたは${c1.conscious}という意志を周囲に見せていますが、実は心の奥底で、${c2.subconscious}という、誰にも見せていない繊細な願いを抱いているのではないでしょうか？この「外向きの顔」と「内なる声」のギャップに、あなた自身も薄々気づいているはずです。`;
                 }
 
                 // パート2: 深い肯定
-                const affirmationText = `これまで周囲のために頑張ってきたあなた。そろそろ自分自身の強みに目を向け、本来の輝きを取り戻す時期が来ています。`;
+                const affirmationText = `最近、周囲の期待に応えようとして、自分の本当の気持ちを後回しにしてきた場面があったように見受けられます。あなたのその隠れた頑張りは、星々がしっかりと見ていますよ。`;
 
                 // パート3: 未来への導き（ランダム）
                 const randomAdvice = FUTURE_MESSAGES[Math.floor(Math.random() * FUTURE_MESSAGES.length)];
 
                 // 結合
-                return `${userName}様、診断結果をお伝えします。\n\n【魂の声の診断】\n${ambivalenceText}\n\n${affirmationText}\n\n【これからのあなたへ】\n${randomAdvice} \n\nあなたの強みである「${numData.keyword}」の資質と、${c2.name}色のエネルギーを味方につけて、本来の輝きを発揮してください。`;
+                return `${userName}様、鑑定結果が出ました。\n\n【内なる声の診断】\n${ambivalenceText}\n\n${affirmationText}\n\n【運命の導き】\n${randomAdvice} \n\nあなたを守護する数字「${numData.keyword}」の力と、${c2.name}色のエネルギーを味方につけて、運命を切り拓いてください。`;
             };
 
             const handleColor2Submit = async (colorKey) => {
@@ -300,8 +238,8 @@
                     <div
                         className={`
                             w-12 h-12 shadow-md transition-all duration-300 rounded-full
-                            ${isSelected ? 'ring-2 ring-offset-2 ring-offset-[#0a1520] ring-[#00CED1] shadow-[0_0_15px_rgba(0,206,209,0.5)]' : ''}
-                            ${data.border ? 'border border-gray-400' : ''}
+                            ${isSelected ? 'ring-2 ring-offset-2 ring-[#C5A028] shadow-lg' : ''}
+                            ${data.border ? 'border border-gray-300' : ''}
                         `}
                         style={{ backgroundColor: data.hex }}
                     >
@@ -311,15 +249,21 @@
                             </div>
                         )}
                     </div>
-                    <span className="text-[10px] tracking-wider text-[#a0d8d8]">{data.name}</span>
+                    <span className="text-[10px] tracking-wider text-gray-600 font-serif">{data.name}</span>
                 </button>
             );
 
             return (
-                <div className="min-h-screen w-full flex items-center justify-center p-4 text-white relative z-10">
+                <div className="min-h-screen w-full bg-[#F0F4F2] flex items-center justify-center p-4 text-[#4A4A4A] relative overflow-hidden">
 
-                    {/* メインカード - 半透明でオーロラ背景が見える */}
-                    <div className="relative w-full max-w-md bg-[#0a1520]/80 backdrop-blur-sm border border-[#00CED1]/30 shadow-[0_10px_40px_-10px_rgba(0,206,209,0.3)] rounded-xl overflow-hidden transition-all duration-500">
+                    {/* 背景装飾 */}
+                    <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+                        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-[#E8F0E8] rounded-full mix-blend-multiply filter blur-[80px]"></div>
+                        <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-[#E0EBE4] rounded-full mix-blend-multiply filter blur-[80px]"></div>
+                    </div>
+
+                    {/* メインカード */}
+                    <div className="relative w-full max-w-md bg-white border border-[#C5A028]/20 shadow-[0_10px_40px_-10px_rgba(85,139,110,0.15)] rounded-xl overflow-hidden transition-all duration-500">
 
                         <CornerDecoration className="absolute top-2 left-2 pointer-events-none" />
                         <CornerDecoration className="absolute top-2 right-2 transform scale-x-[-1] pointer-events-none" />
@@ -331,14 +275,14 @@
                             {/* ヘッダーエリア */}
                             <div className="text-center mb-8 pt-4">
                                 <div className="inline-flex items-center gap-2 mb-3">
-                                    <div className="h-[1px] w-8 bg-[#00CED1]"></div>
-                                    <span className="text-[13px] tracking-[0.2em] text-[#00CED1] uppercase">無料診断</span>
-                                    <div className="h-[1px] w-8 bg-[#00CED1]"></div>
+                                    <div className="h-[1px] w-8 bg-[#C5A028]"></div>
+                                    <span className="text-[13px] tracking-[0.2em] text-[#C5A028] uppercase">無料鑑定</span>
+                                    <div className="h-[1px] w-8 bg-[#C5A028]"></div>
                                 </div>
-                                <h1 className="text-2xl font-bold text-white mb-2 tracking-wide">
+                                <h1 className="text-2xl font-bold text-[#444] mb-2 tracking-wide font-serif">
                                     {APP_CONFIG.appTitle}
                                 </h1>
-                                <p className="text-xs text-[#8ecfcf] tracking-wider">{APP_CONFIG.subTitle}</p>
+                                <p className="text-xs text-[#888] font-sans tracking-wider">{APP_CONFIG.subTitle}</p>
                             </div>
 
                             {/* コンテンツエリア */}
@@ -348,32 +292,32 @@
                                 {step === 'input_profile' && (
                                     <form onSubmit={handleProfileSubmit} className="space-y-8 animate-fade-in-up px-2">
                                         <div className="text-center mb-6">
-                                            <p className="text-sm text-[#a0d8d8] leading-loose">
-                                                あなたのお名前と生年月日から、<br/>
-                                                本来の強みを紐解きます。
+                                            <p className="text-sm text-[#666] font-sans leading-loose">
+                                                あなたのお名前と生年月日は、<br/>
+                                                運命を紐解く鍵となります。
                                             </p>
                                         </div>
 
                                         <div className="space-y-6">
                                             <div className="space-y-2">
-                                                <label className="block text-xs font-bold text-[#00CED1] tracking-widest uppercase">名前</label>
+                                                <label className="block text-xs font-bold text-[#C5A028] tracking-widest uppercase">名前</label>
                                                 <input
                                                     type="text"
                                                     value={name}
                                                     onChange={(e) => setName(e.target.value)}
-                                                    placeholder="お名前を入力してください（ニックネーム可）"
-                                                    className="w-full px-4 py-3 bg-[#0d2030]/60 border-b border-[#00CED1]/40 focus:border-[#00CED1] focus:bg-[#0d2030]/80 outline-none transition-colors text-white placeholder-[#5a8a8a] rounded-none"
+                                                    placeholder="お名前を入力してください（ニックネーム可能）"
+                                                    className="w-full px-4 py-3 bg-[#FAFAFA] border-b border-[#D1D1D1] focus:border-[#C5A028] focus:bg-white outline-none transition-colors text-[#333] placeholder-gray-400 font-sans rounded-none"
                                                     required
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <label className="block text-xs font-bold text-[#00CED1] tracking-widest uppercase">生年月日</label>
+                                                <label className="block text-xs font-bold text-[#C5A028] tracking-widest uppercase">生年月日</label>
                                                 <div className="grid grid-cols-3 gap-3">
                                                     <div className="relative">
                                                         <select
                                                             value={birthYear}
                                                             onChange={(e) => setBirthYear(e.target.value)}
-                                                            className="w-full px-2 py-3 bg-[#0d2030]/60 border-b border-[#00CED1]/40 focus:border-[#00CED1] outline-none appearance-none text-white text-sm rounded-none cursor-pointer"
+                                                            className="w-full px-2 py-3 bg-[#FAFAFA] border-b border-[#D1D1D1] focus:border-[#C5A028] outline-none appearance-none text-[#333] text-sm font-sans rounded-none cursor-pointer"
                                                             required
                                                         >
                                                             <option value="">年</option>
@@ -384,7 +328,7 @@
                                                         <select
                                                             value={birthMonth}
                                                             onChange={(e) => setBirthMonth(e.target.value)}
-                                                            className="w-full px-2 py-3 bg-[#0d2030]/60 border-b border-[#00CED1]/40 focus:border-[#00CED1] outline-none appearance-none text-white text-sm rounded-none cursor-pointer"
+                                                            className="w-full px-2 py-3 bg-[#FAFAFA] border-b border-[#D1D1D1] focus:border-[#C5A028] outline-none appearance-none text-[#333] text-sm font-sans rounded-none cursor-pointer"
                                                             required
                                                         >
                                                             <option value="">月</option>
@@ -395,7 +339,7 @@
                                                         <select
                                                             value={birthDay}
                                                             onChange={(e) => setBirthDay(e.target.value)}
-                                                            className="w-full px-2 py-3 bg-[#0d2030]/60 border-b border-[#00CED1]/40 focus:border-[#00CED1] outline-none appearance-none text-white text-sm rounded-none cursor-pointer"
+                                                            className="w-full px-2 py-3 bg-[#FAFAFA] border-b border-[#D1D1D1] focus:border-[#C5A028] outline-none appearance-none text-[#333] text-sm font-sans rounded-none cursor-pointer"
                                                             required
                                                         >
                                                             <option value="">日</option>
@@ -409,12 +353,12 @@
                                         <div className="flex flex-col items-center mt-8 gap-3">
                                             <button
                                                 type="submit"
-                                                className={`bg-gradient-to-r ${APP_CONFIG.primaryColor} text-white text-sm font-medium py-3 px-10 rounded-full shadow-md hover:shadow-[0_0_20px_rgba(0,206,209,0.4)] transform transition-all tracking-widest flex items-center gap-2 border border-white/20`}
+                                                className={`bg-gradient-to-r ${APP_CONFIG.primaryColor} text-white text-sm font-medium py-3 px-10 rounded-sm shadow-md hover:shadow-xl transform transition-all tracking-widest flex items-center gap-2 border border-white/20`}
                                             >
                                                 <span>カラー診断へ進む</span>
                                                 <ChevronRight size={14} />
                                             </button>
-                                            <p className="text-[13px] text-[#6a9a9a]">※入力内容は保存されません</p>
+                                            <p className="text-[13px] text-[#999] font-sans">※入力内容は保存されません</p>
                                         </div>
                                     </form>
                                 )}
@@ -423,9 +367,9 @@
                                 {step === 'input_color1' && (
                                     <div className="space-y-8 animate-fade-in-up text-center px-2">
                                         <div className="space-y-2">
-                                            <span className="text-[#00CED1] text-xs font-bold tracking-widest uppercase block">Question 01</span>
-                                            <h2 className="text-lg font-medium text-white">今、最も惹かれる色はどれですか？</h2>
-                                            <p className="text-xs text-[#8ecfcf] mt-2">深く考えず、直感でお選びください。</p>
+                                            <span className="text-[#C5A028] text-xs font-bold tracking-widest uppercase block">Question 01</span>
+                                            <h2 className="text-lg font-medium text-[#333] font-serif">今、最も惹かれる色はどれですか？</h2>
+                                            <p className="text-xs text-[#888] font-sans mt-2">深く考えず、直感でお選びください。</p>
                                         </div>
 
                                         <div className="grid grid-cols-4 gap-x-2 gap-y-6 py-4">
@@ -446,9 +390,9 @@
                                 {step === 'input_color2' && (
                                     <div className="space-y-8 animate-fade-in-up text-center px-2">
                                         <div className="space-y-2">
-                                            <span className="text-[#00CED1] text-xs font-bold tracking-widest uppercase block">Question 02</span>
-                                            <h2 className="text-lg font-medium text-white">次に気になる色はどれですか？</h2>
-                                            <p className="text-xs text-[#8ecfcf] mt-2">あなたの深層心理に問いかけます。</p>
+                                            <span className="text-[#C5A028] text-xs font-bold tracking-widest uppercase block">Question 02</span>
+                                            <h2 className="text-lg font-medium text-[#333] font-serif">次に気になる色はどれですか？</h2>
+                                            <p className="text-xs text-[#888] font-sans mt-2">あなたの深層心理に問いかけます。</p>
                                         </div>
 
                                         <div className="grid grid-cols-4 gap-x-2 gap-y-6 py-4">
@@ -469,16 +413,16 @@
                                 {step === 'loading' && (
                                     <div className="flex flex-col items-center justify-center py-12 animate-fade-in">
                                         <div className="relative mb-8">
-                                            <div className="w-16 h-16 border-[1px] border-[#00CED1]/30 rounded-full"></div>
-                                            <div className="absolute top-0 left-0 w-16 h-16 border-[1px] border-t-[#00CED1] border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
+                                            <div className="w-16 h-16 border-[1px] border-[#E8E8E8] rounded-full"></div>
+                                            <div className="absolute top-0 left-0 w-16 h-16 border-[1px] border-t-[#C5A028] border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
                                             <div className="absolute inset-0 flex items-center justify-center">
-                                                <Diamond size={12} className="text-[#00CED1] animate-pulse" />
+                                                <Diamond size={12} className="text-[#C5A028] animate-pulse" />
                                             </div>
                                         </div>
                                         <div className="text-center space-y-3">
-                                            <p className="text-lg text-white tracking-widest">診断中...</p>
-                                            <p className="text-xs text-[#8ecfcf]">
-                                                あなたの魂の声を読み解いています<br/>
+                                            <p className="text-lg font-serif text-[#333] tracking-widest">鑑定中...</p>
+                                            <p className="text-xs font-sans text-[#888]">
+                                                星の配置と色の波長を読み解いています<br/>
                                                 <span className="opacity-70 text-[10px]">しばらくお待ちください</span>
                                             </p>
                                         </div>
@@ -489,36 +433,36 @@
                                 {step === 'result' && numerologyResult && (
                                     <div className="animate-fade-in-up space-y-6 pb-2">
 
-                                        <div className="text-center border-b border-[#00CED1]/30 pb-4 mb-4 mx-4">
-                                            <p className="text-xs text-[#8ecfcf] mb-1 tracking-wider">Diagnostic Result</p>
-                                            <p className="text-sm text-white">{name} 様の診断結果</p>
+                                        <div className="text-center border-b border-[#E8E8E8] pb-4 mb-4 mx-4">
+                                            <p className="text-xs text-[#888] font-sans mb-1 tracking-wider">Diagnostic Result</p>
+                                            <p className="text-sm text-[#333] font-serif">{name} 様の鑑定書</p>
                                         </div>
 
                                         {/* 結果カード */}
-                                        <div className="bg-[#0d2030]/60 border border-[#00CED1]/30 p-6 mx-2 relative overflow-hidden rounded-lg">
-                                            <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-[#00CED1] to-transparent"></div>
+                                        <div className="bg-[#FAFAFA] border border-[#E8E8E8] p-6 mx-2 relative overflow-hidden shadow-inner">
+                                            <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-[#D4AF37] via-[#FCEDA5] to-[#D4AF37]"></div>
 
                                             {/* メイン数秘 */}
                                             <div className="text-center mb-8">
                                                 <div className="flex items-center justify-center gap-2 mb-2">
-                                                    <div className="h-[1px] w-4 bg-[#00CED1]"></div>
-                                                    <span className="text-[10px] text-[#00CED1] uppercase tracking-widest font-bold">Your Strength Number</span>
-                                                    <div className="h-[1px] w-4 bg-[#00CED1]"></div>
+                                                    <div className="h-[1px] w-4 bg-[#C5A028]"></div>
+                                                    <span className="text-[10px] text-[#C5A028] uppercase tracking-widest font-bold">Life Path Number</span>
+                                                    <div className="h-[1px] w-4 bg-[#C5A028]"></div>
                                                 </div>
 
-                                                <div className="text-5xl text-white mb-3 relative inline-block font-bold">
+                                                <div className="font-serif text-5xl text-[#333] mb-3 relative inline-block">
                                                     {calculateLifePathNumber(birthYear, birthMonth, birthDay)}
-                                                    <Star size={12} className="absolute -top-1 -right-4 text-[#00CED1] opacity-70" />
+                                                    <Star size={12} className="absolute -top-1 -right-4 text-[#C5A028] opacity-50" />
                                                 </div>
 
-                                                <h2 className="text-lg font-bold text-[#00CED1] mb-3">
+                                                <h2 className="text-lg font-serif font-bold text-[#333] mb-3">
                                                     {numerologyResult.keyword}
                                                 </h2>
-                                                <p className="text-sm text-[#a0d8d8] leading-relaxed text-justify">
+                                                <p className="text-sm font-sans text-[#555] leading-relaxed text-justify">
                                                     {numerologyResult.desc}
                                                 </p>
                                                 {/* 数秘詳細メッセージ */}
-                                                <p className="text-sm text-white/90 leading-relaxed text-justify mt-4 bg-[#0a1a25]/80 p-3 rounded border border-[#00CED1]/20">
+                                                <p className="text-sm font-serif text-[#444] leading-relaxed text-justify mt-4 bg-white p-3 rounded border border-[#E8E8E8]">
                                                     {numerologyResult.message}
                                                 </p>
                                             </div>
@@ -527,35 +471,35 @@
                                             <div className="space-y-6">
                                                 {/* 1色目 (Conscious) */}
                                                 <div className="flex items-start gap-3">
-                                                    <div className="w-8 h-8 rounded-full border border-white/30 flex-shrink-0 shadow-sm mt-1" style={{background: COLOR_DATA[firstColor].hex}}></div>
+                                                    <div className="w-8 h-8 rounded-full border border-gray-200 flex-shrink-0 shadow-sm mt-1" style={{background: COLOR_DATA[firstColor].hex}}></div>
                                                     <div className="flex-1">
-                                                        <div className="text-[10px] uppercase text-[#00CED1] tracking-wider font-bold">Conscious</div>
-                                                        <p className="text-xs text-[#a0d8d8] leading-tight mt-1 mb-2">
-                                                            今あなたが思っていること：{COLOR_DATA[firstColor].conscious}
+                                                        <div className="text-[10px] uppercase text-[#C5A028] tracking-wider font-bold">Conscious</div>
+                                                        <p className="text-xs text-[#555] font-sans leading-tight mt-1 mb-2">
+                                                            表向きの顔：{COLOR_DATA[firstColor].conscious}
                                                         </p>
                                                     </div>
                                                 </div>
                                                 {/* 2色目 (Subconscious) */}
                                                 <div className="flex items-start gap-3">
-                                                    <div className="w-8 h-8 rounded-full border border-white/30 flex-shrink-0 shadow-sm mt-1" style={{background: COLOR_DATA[secondColor].hex}}></div>
+                                                    <div className="w-8 h-8 rounded-full border border-gray-200 flex-shrink-0 shadow-sm mt-1" style={{background: COLOR_DATA[secondColor].hex}}></div>
                                                     <div className="flex-1">
-                                                        <div className="text-[10px] uppercase text-[#00CED1] tracking-wider font-bold">Subconscious</div>
-                                                        <p className="text-xs text-[#a0d8d8] leading-tight mt-1 mb-2">
-                                                            心から望んでいること：{COLOR_DATA[secondColor].subconscious}
+                                                        <div className="text-[10px] uppercase text-[#C5A028] tracking-wider font-bold">Subconscious</div>
+                                                        <p className="text-xs text-[#555] font-sans leading-tight mt-1 mb-2">
+                                                            内なる声：{COLOR_DATA[secondColor].subconscious}
                                                         </p>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             {/* 鑑定士からのメッセージ (生成されたロジック文章) */}
-                                            <div className="mt-8 pt-6 border-t border-[#00CED1]/30">
+                                            <div className="mt-8 pt-6 border-t border-[#E8E8E8]">
                                                 <div className="flex items-center justify-center gap-2 mb-4">
-                                                    <Star size={14} className="text-[#00CED1]" />
-                                                    <span className="text-xs font-bold text-[#00CED1] uppercase tracking-widest">Message from {APP_CONFIG.advisorName}</span>
-                                                    <Star size={14} className="text-[#00CED1]" />
+                                                    <Star size={14} className="text-[#C5A028]" />
+                                                    <span className="text-xs font-bold text-[#C5A028] uppercase tracking-widest">Message from {APP_CONFIG.advisorName}</span>
+                                                    <Star size={14} className="text-[#C5A028]" />
                                                 </div>
-                                                <div className="bg-[#0a1a25]/80 p-4 rounded-lg border border-[#00CED1]/20">
-                                                    <p className="text-sm text-white/90 leading-relaxed whitespace-pre-wrap">
+                                                <div className="bg-white p-4 rounded-lg border border-[#f0e6d2] shadow-sm">
+                                                    <p className="text-sm font-serif text-[#444] leading-relaxed whitespace-pre-wrap">
                                                         {generatedMessage}
                                                     </p>
                                                 </div>
@@ -566,15 +510,15 @@
                                         {/* CTAエリア */}
                                         <div className="pt-4 space-y-4 px-4">
                                             <div className="text-center">
-                                                <p className="text-xs text-[#00CED1] tracking-widest mb-3">
-                                                    より深く自分を知りたいですか？
+                                                <p className="text-xs text-[#C5A028] font-serif tracking-widest mb-3">
+                                                    より深い運命の導きが必要ですか？
                                                 </p>
                                             </div>
                                             <a
                                                 href={APP_CONFIG.ctaLink}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className={`block w-full bg-gradient-to-r ${APP_CONFIG.primaryColor} text-white text-center text-sm font-medium py-4 px-6 rounded-full shadow-md hover:shadow-[0_0_25px_rgba(0,206,209,0.5)] transition-all flex items-center justify-center gap-3 tracking-widest border border-white/30`}
+                                                className={`block w-full bg-gradient-to-r ${APP_CONFIG.primaryColor} text-white text-center text-sm font-medium py-4 px-6 rounded-sm shadow-md hover:shadow-xl transition-all flex items-center justify-center gap-3 tracking-widest border border-white/30`}
                                             >
                                                 <span>{APP_CONFIG.ctaButtonText}</span>
                                                 <ArrowRight size={16} />
@@ -582,7 +526,7 @@
 
                                             <button
                                                 onClick={reset}
-                                                className="block w-full text-center text-xs text-[#6a9a9a] hover:text-[#8ecfcf] transition-colors py-2"
+                                                className="block w-full text-center text-xs text-[#999] hover:text-[#666] transition-colors py-2 font-sans"
                                             >
                                                 トップに戻る
                                             </button>
@@ -595,9 +539,9 @@
                         </div>
 
                         {/* フッター */}
-                        <div className="bg-[#0a1520]/50 p-3 text-center border-t border-[#00CED1]/20">
-                           <p className="text-[10px] text-[#6a9a9a] tracking-wider">
-                             © {new Date().getFullYear()} {APP_CONFIG.advisorName}. All rights reserved.
+                        <div className="bg-[#E0EBE4]/30 p-3 text-center border-t border-[#C5A028]/10">
+                           <p className="text-[10px] text-[#889999] font-serif tracking-wider">
+                             © {new Date().getFullYear()} {APP_CONFIG.advisorName}.
                            </p>
                         </div>
                     </div>
